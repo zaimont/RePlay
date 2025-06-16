@@ -1,7 +1,7 @@
 import React from "react";
 
 
-function Register(){
+function RegisterCompany(){
     return(
         <section>
             <div>
@@ -11,4 +11,4 @@ function Register(){
     )
 }
 
-export default Register;
+export default RegisterCompany;

@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { login } from './controller/usersController.js';
+import { login, registerUser } from './controller/usersController.js';
 
 dotenv.config();
 
@@ -16,6 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.error('Error de conexión MongoDB:', err));
 
 app.post('/login',login); 
+app.post('/register', registerUser);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));

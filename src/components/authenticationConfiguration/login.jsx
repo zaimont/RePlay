@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+
 
 
 
@@ -40,7 +42,7 @@ function Login() {
             
         >
             <div className="flex justify-start items-start ">
-                <h1 class="font-replay font-bold text-black italic text-3xl">RePlay</h1>
+                <h1 class=" font-bold text-black italic text-3xl">RePlay</h1>
             </div>
             <div className="flex-grow flex justify-center items-center">
 
@@ -67,7 +69,7 @@ function Login() {
                             Iniciar Sesion
                         </button>
                     </form>
-                    <p className="flex justify-center items-center">No tienes Una cuenta?    <a href="/register.jsx" className="text-[#d89c7e] font-bold hover:text-orange-300 transition duration:300">  Sign Up</a> </p>
+                    <p className="flex justify-center items-center">No tienes Una cuenta?    <Link to="/register" className="text-[#d89c7e] font-bold hover:text-orange-300 transition duration:300">  Sign Up</Link> </p>
                 </div>
             </div>
         </section>
