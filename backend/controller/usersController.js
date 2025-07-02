@@ -1,5 +1,6 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
+import { db } from '../index.js';
 
 export const registerUser = async (req, res) => {
   const { fullName, email, password, role } = req.body;
@@ -7,21 +8,24 @@ export const registerUser = async (req, res) => {
   try {
     const cleanedEmail = email.toLowerCase().trim();
 
-    const existingUser = await User.findOne({ email: cleanedEmail });
-    if (existingUser) {
-      return res.status(400).json({ message: 'El email ya está registrado' });
+    const existingUser = await db.query(
+      'SELECT * FROM users WHERE email = $1',
+      [cleanedEmail]
+    );
+
+    if(existingUser.rows.length>0){
+      return res.status(400).json({message: 'El email ya esta registrado'});
     }
+
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({
-      fullName,
-      email: cleanedEmail,
-      role,
-      password: hashedPassword,
-    });
+    await db.query(
+      'INSERT INTO users (fullname, email, role, password) VALUES ($1,$2,$3,$4)',
+      [fullName, cleanedEmail, role, hashedPassword]
+    );
 
-    await newUser.save();
+
 
     res.status(201).json({ message: 'Usuario registrado con éxito' });
   } catch (error) {
