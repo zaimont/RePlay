@@ -1,7 +1,7 @@
 import React from "react";
 
 
-function UserProfile(){
+function RegisterCompany(){
     return(
         <section>
             <div>
@@ -11,4 +11,4 @@ function UserProfile(){
     )
 }
 
-export default UserProfile;
+export default RegisterCompany;
