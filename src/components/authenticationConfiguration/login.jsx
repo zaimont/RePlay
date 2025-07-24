@@ -64,7 +64,7 @@ function Login() {
               style={{ boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
             />
 
-            <button
+            <button to="/register"
               type="submit"
               className="bg-[#FFC2A3] text-white font-semibold py-2 rounded-lg hover:bg-orange-300 transition duration-300"
             >

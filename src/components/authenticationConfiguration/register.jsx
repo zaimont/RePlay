@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Register() {
   const [checked, setChecked] = useState(false);
@@ -39,7 +39,7 @@ function Register() {
 
       if (response.ok) {
         alert(data.message);
-        navigate('/login');
+        navigate('/registercompany');
       } else {
         alert(data.message);
       }
@@ -49,7 +49,7 @@ function Register() {
     }
   };
 
-  const inputClass = "border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500";
+  const inputClass = "border bg-white border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300";
 
   return (
     <section className="h-screen w-screen bg-[#E8FAFF] flex flex-col">
@@ -121,6 +121,8 @@ function Register() {
             >
               Sign Up
             </button>
+            <p>Deseas registrar tu empresa?</p>
+            <Link to="/register-company">Haz click aqui para registrar tu compañia!</Link>         
           </form>
         </div>
       </div>

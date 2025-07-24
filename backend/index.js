@@ -3,6 +3,8 @@ import pkg from 'pg';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { login, registerUser } from './controller/usersController.js';
+import { registerCompany } from './controller/registerCompanyController.js';
+
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ db.connect()
 
 app.post('/login', login);
 app.post('/register', registerUser);
+app.post('/registercompany', registerCompany); // 👈 NUEVO
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
