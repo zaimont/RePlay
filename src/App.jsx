@@ -6,6 +6,7 @@ import Login from './components/authenticationConfiguration/login'
 import RegisterCompany from './components/authenticationConfiguration/register-company';
 import UserProfile from './components/authenticationConfiguration/userProfile'
 import Register from './components/authenticationConfiguration/register'
+import PrediccionGastos from './components/dataManagement/PrediccionGastos';
 function App() {
   
 
@@ -16,7 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/register-company" element={<RegisterCompany />} />
         <Route path="/userProfile" element={<UserProfile />} />
-  
+        <Route path="/prediccion-gastos" element={<PrediccionGastos />} />
         <Route path="/comparacion-anual" element={<YearlyComparation />} />
       </Routes>
     </Router>
