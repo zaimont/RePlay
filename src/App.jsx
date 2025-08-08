@@ -15,7 +15,7 @@ function App() {
          <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/register-company" element={<RegisterCompany />} />
-        <Route path="/perfil" element={<UserProfile />} />
+        <Route path="/userProfile" element={<UserProfile />} />
   
         <Route path="/comparacion-anual" element={<YearlyComparation />} />
       </Routes>
