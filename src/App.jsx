@@ -1,6 +1,6 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-
+import PdfGastoExtractor from './components/dataManagement/UploadData'
 import YearlyComparation from './components/annualComparation/yearlyComparison'
 import Login from './components/authenticationConfiguration/login'
 import RegisterCompany from './components/authenticationConfiguration/register-company';
@@ -18,6 +18,7 @@ function App() {
         <Route path="/register-company" element={<RegisterCompany />} />
         <Route path="/userProfile" element={<UserProfile />} />
         <Route path="/prediccion-gastos" element={<PrediccionGastos />} />
+       <Route path="/upload-pdf" element={<PdfGastoExtractor />} />
         <Route path="/comparacion-anual" element={<YearlyComparation />} />
       </Routes>
     </Router>
