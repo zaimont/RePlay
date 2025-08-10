@@ -1,93 +1,159 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// src/pages/Prediction.jsx
+import React, { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale
+} from "chart.js";
+import "chartjs-adapter-date-fns";
 
-const GastosManager = () => {
-  const [categoria, setCategoria] = useState("");
-  const [monto, setMonto] = useState("");
-  const [fecha, setFecha] = useState("");
-  const [gastos, setGastos] = useState([]);
+ChartJS.register(
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale
+);
 
-  // Cargar gastos desde backend
-  const cargarGastos = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/gastos");
-      setGastos(response.data);
-    } catch (error) {
-      console.error("Error al cargar gastos:", error);
-    }
-  };
+export default function Prediction() {
+  const [periods, setPeriods] = useState(6);
+  const [dataChart, setDataChart] = useState(null);
+  const [totalPredicho, setTotalPredicho] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    cargarGastos();
-  }, []);
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`http://localhost:8000/prediccion-gastos?periods=${periods}`);
+        if (!res.ok) {
+          throw new Error(`Error del servidor: ${res.status}`);
+        }
+        const data = await res.json();
 
-  // Enviar gasto nuevo al backend
-  const agregarGasto = async () => {
-    if (!categoria || !monto || !fecha) {
-      alert("Por favor llena todos los campos");
-      return;
+        const historicos = data.historicos.map(d => ({ x: d.ds, y: d.y }));
+        const predicciones = data.predicciones.map(d => ({ x: d.ds, y: d.yhat }));
+
+        setDataChart({
+          datasets: [
+            {
+              label: "Histórico",
+              data: historicos,
+              borderColor: "#6a5acd",
+              backgroundColor: "#6a5acd",
+              tension: 0.3
+            },
+            {
+              label: "Predicción",
+              data: predicciones,
+              borderColor: "#ff69b4",
+              backgroundColor: "#ff69b4",
+              borderDash: [5, 5],
+              tension: 0.3
+            }
+          ]
+        });
+        setTotalPredicho(data.total_predicho);
+      } catch (err) {
+        setError(err.message);
+      }
+      setLoading(false);
     }
-    try {
-      await axios.post("http://localhost:5000/agregar-gasto", {
-        categoria,
-        monto: parseFloat(monto),
-        fecha,
-      });
-      setCategoria("");
-      setMonto("");
-      setFecha("");
-      cargarGastos(); // refrescar lista
-    } catch (error) {
-      console.error("Error al agregar gasto:", error);
-      alert("Error al agregar gasto, revisa consola.");
-    }
-  };
+    fetchData();
+  }, [periods]);
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white shadow rounded space-y-4">
-      <h2 className="text-xl font-bold">Agregar Gasto Histórico</h2>
+    <div style={{ width: "90%", margin: "2rem auto", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
+      <h2 style={{ textAlign: "center", color: "#ff69b4", marginBottom: "1rem" }}>📊 Predicción de Gastos</h2>
 
-      <input
-        type="text"
-        placeholder="Categoría"
-        value={categoria}
-        onChange={(e) => setCategoria(e.target.value)}
-        className="w-full p-2 border"
-      />
+      <div style={{ marginBottom: "1.5rem", textAlign: "center" }}>
+        <label htmlFor="periodSelect" style={{ fontWeight: "600", fontSize: "1.1rem" }}>
+          Selecciona horizonte de predicción:
+        </label>
+        <select
+          id="periodSelect"
+          value={periods}
+          onChange={e => setPeriods(Number(e.target.value))}
+          style={{
+            marginLeft: "10px",
+            padding: "6px 10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+            fontSize: "1rem",
+            cursor: "pointer"
+          }}
+        >
+          <option value={6}>6 meses</option>
+          <option value={12}>1 año</option>
+          <option value={24}>2 años</option>
+          <option value={36}>3 años</option>
+        </select>
+      </div>
 
-      <input
-        type="number"
-        placeholder="Monto"
-        value={monto}
-        onChange={(e) => setMonto(e.target.value)}
-        className="w-full p-2 border"
-      />
+      {loading && <p style={{ textAlign: "center" }}>Cargando predicciones...</p>}
+      {error && <p style={{ textAlign: "center", color: "red" }}>Error: {error}</p>}
 
-      <input
-        type="date"
-        value={fecha}
-        onChange={(e) => setFecha(e.target.value)}
-        className="w-full p-2 border"
-      />
-
-      <button
-        onClick={agregarGasto}
-        className="bg-blue-600 text-white p-2 w-full rounded"
-      >
-        Agregar Gasto
-      </button>
-
-      <h3 className="text-lg font-semibold mt-4">Gastos Guardados</h3>
-      <ul className="list-disc list-inside max-h-64 overflow-y-auto">
-        {gastos.length === 0 && <li>No hay gastos registrados.</li>}
-        {gastos.map((gasto) => (
-          <li key={gasto.id || `${gasto.fecha}-${gasto.categoria}`}>
-            {gasto.fecha} - {gasto.categoria} : ${gasto.monto.toFixed(2)}
-          </li>
-        ))}
-      </ul>
+      {dataChart && !loading && !error && (
+        <>
+          <Line
+            data={dataChart}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: "top"
+                },
+                title: {
+                  display: true,
+                  text: "Gastos Históricos y Predicciones",
+                  font: { size: 18 }
+                }
+              },
+              scales: {
+                x: {
+                  type: "time",
+                  time: { unit: "month" },
+                  title: {
+                    display: true,
+                    text: "Fecha"
+                  }
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: "Monto ($)"
+                  },
+                  beginAtZero: true
+                }
+              }
+            }}
+          />
+          <p
+            style={{
+              marginTop: "1.5rem",
+              fontSize: "1.2rem",
+              textAlign: "center",
+              color: "#555"
+            }}
+          >
+            El gasto total estimado para los próximos{" "}
+            <strong>{periods} {periods === 1 ? "mes" : "meses"}</strong> es de aproximadamente{" "}
+            <strong>${totalPredicho.toFixed(2)}</strong>.
+          </p>
+        </>
+      )}
     </div>
   );
-};
-
-export default GastosManager;
+}
