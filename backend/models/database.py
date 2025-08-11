@@ -1,17 +1,15 @@
-import sqlite3
-from pathlib import Path
 import psycopg2
-
-
-#DB_PATH = Path(__file__).resolve().parent.parent / "gastos.db"
+from psycopg2 import sql
+from datetime import datetime
+from decimal import Decimal
 
 def crear_tabla():
     conn = psycopg2.connect(
-        host = "localhost",
-        database = "RePlay",
-        user = "postgres",
-        password = "12345",
-        port = "5432"
+        host="localhost",
+        database="RePlay",
+        user="postgres",
+        password="12345",
+        port="5432"
     )
     cursor = conn.cursor()
     cursor.execute("""
@@ -19,52 +17,17 @@ def crear_tabla():
             id SERIAL PRIMARY KEY,
             categoria TEXT,
             monto REAL,
-            fecha TEXT,
+            fecha DATE,
             descripcion TEXT,
             usuario_id INTEGER,
-            creado_en TEXT
+            creado_en TIMESTAMP DEFAULT NOW()
         )
     """)
     conn.commit()
+    cursor.close()
     conn.close()
 
 def insertar_gasto(categoria, monto, fecha, descripcion, usuario_id):
-    try:
-        conn = psycopg2.connect(
-            host = "localhost",
-            database = "RePlay",
-            user = "postgres",
-            password = "12345",
-            port = "5432"
-        )
-        cursor = conn.cursor()
-        #   VALUES (?, ?, ?, ?, ?, datetime('now'))
-        #, (categoria, monto, fecha, descripcion, usuario_id))
-        #query = "INSERT INTO gastos (categoria, monto, descripcion, usuario_id, fecha) VALUES (%s,%s,%s,%s, datetime('now'))"
-        cursor.execute("""
-    INSERT INTO gastos (categoria, monto, descripcion, usuario_id, fecha) 
-    VALUES (%s, %s, %s, %s, NOW())
-""", (categoria, monto, descripcion, usuario_id))
-
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        print(f"Error en insertar_gasto: {e}")
-        raise
-
-
-
-
-def obtener_gastos():
-    conn = sqlite3.connect("backend/gastos.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT fecha, monto FROM gastos ORDER BY fecha ASC")
-    datos = cursor.fetchall()
-    conn.close()
-    return datos
-
-
-def obtener_gastos():
     try:
         conn = psycopg2.connect(
             host="localhost",
@@ -74,10 +37,36 @@ def obtener_gastos():
             port="5432"
         )
         cursor = conn.cursor()
-        cursor.execute("SELECT fecha, monto FROM gastos ORDER BY fecha ASC")
-        datos = cursor.fetchall()
+
+        # Aquí se usa el valor de fecha que se recibe (espera formato 'YYYY-MM-DD')
+        cursor.execute("""
+            INSERT INTO gastos (categoria, monto, fecha, descripcion, usuario_id) 
+            VALUES (%s, %s, %s, %s, %s)
+        """, (categoria, monto, fecha, descripcion, usuario_id))
+
+        conn.commit()
+        cursor.close()
         conn.close()
-        return datos
     except Exception as e:
-        print(f"Error en obtener_gastos: {e}")
+        print(f"Error en insertar_gasto: {e}")
         raise
+
+def obtener_gastos_por_categoria(categoria: str):
+    conn = psycopg2.connect(
+        host="localhost",
+        port=5432,
+        database="RePlay",
+        user="postgres",
+        password="12345"
+    )
+    try:
+        with conn.cursor() as cur:
+            query = """
+                SELECT fecha, monto FROM gastos WHERE categoria = %s ORDER BY fecha ASC
+            """
+            cur.execute(query, (categoria,))
+            rows = cur.fetchall()
+        # Convertir Decimal a float para evitar problemas con Prophet
+        return [(row[0], float(row[1])) for row in rows]
+    finally:
+        conn.close()
