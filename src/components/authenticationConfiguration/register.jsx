@@ -39,7 +39,7 @@ function Register() {
 
       if (response.ok) {
         alert(data.message);
-        navigate('/registercompany');
+        navigate('/Login');  // Aquí redirige al login después del registro exitoso
       } else {
         alert(data.message);
       }
@@ -121,8 +121,9 @@ function Register() {
             >
               Sign Up
             </button>
-            <p>Deseas registrar tu empresa?</p>
-            <Link to="/register-company">Haz click aqui para registrar tu compañia!</Link>         
+
+            <p>¿Deseas registrar tu empresa?</p>
+            <Link to="/register-company">Haz click aquí para registrar tu compañía!</Link>         
           </form>
         </div>
       </div>

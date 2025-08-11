@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BarChart3, FileText, TrendingUp, LogOut } from "lucide-react";
+import { BarChart3, FileText, TrendingUp, LogOut, User } from "lucide-react";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -32,13 +32,26 @@ export default function Home() {
       {/* Encabezado */}
       <header className="flex justify-between items-center mb-8">
         <h1 className="font-bold text-black italic text-3xl">RePlay</h1>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
-        >
-          <LogOut size={18} />
-          Cerrar sesión
-        </button>
+
+        <div className="flex items-center gap-4">
+          {/* Botón Perfil */}
+          <button
+            onClick={() => navigate("/userProfile")}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition"
+            title="Ver perfil"
+          >
+            <User size={18} />
+            Perfil
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
+          >
+            <LogOut size={18} />
+            Cerrar sesión
+          </button>
+        </div>
       </header>
 
       {/* Bienvenida */}

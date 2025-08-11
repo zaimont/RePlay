@@ -149,6 +149,11 @@ export default function Prediction() {
           display: true,
           text: "Fecha",
         },
+        ticks: {
+          maxRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 6,
+        },
       },
       y: {
         title: {
@@ -160,7 +165,6 @@ export default function Prediction() {
     },
   };
 
-  // Helper para obtener data y totales según categoría seleccionada
   const getSelectedData = () => {
     switch (selectedCategory) {
       case "operaciones":
@@ -177,95 +181,105 @@ export default function Prediction() {
   const { data, total, color } = getSelectedData();
 
   return (
-    <div
-      style={{
-        width: "90%",
-        margin: "2rem auto",
-        fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      }}
-    >
-      <h2 style={{ textAlign: "center", color: "#ff69b4", marginBottom: "1rem" }}>
-        📊 Predicción de Gastos por Categoría
-      </h2>
-
-      <div style={{ marginBottom: "1rem", textAlign: "center" }}>
-        <label
-          htmlFor="periodSelect"
-          style={{ fontWeight: "600", fontSize: "1.1rem", marginRight: 10 }}
-        >
-          Selecciona horizonte de predicción:
-        </label>
-        <select
-          id="periodSelect"
-          value={periods}
-          onChange={(e) => setPeriods(Number(e.target.value))}
-          style={{
-            padding: "6px 10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            fontSize: "1rem",
-            cursor: "pointer",
-            marginRight: 20,
+    <div className="min-h-screen bg-[#B2D6C8] flex flex-col">
+      {/* Header fijo */}
+      <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
+        <h1 className="font-bold text-black italic text-3xl">RePlay - Predicción de Gastos</h1>
+        <button
+          className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded transition"
+          onClick={() => {
+            localStorage.removeItem("user");
+            window.location.href = "/";
           }}
+          aria-label="Cerrar sesión"
         >
-          <option value={6}>6 meses</option>
-          <option value={12}>1 año</option>
-          <option value={24}>2 años</option>
-          <option value={36}>3 años</option>
-        </select>
+          Cerrar sesión
+        </button>
+      </header>
 
-        <label
-          htmlFor="categorySelect"
-          style={{ fontWeight: "600", fontSize: "1.1rem", marginRight: 10 }}
-        >
-          Selecciona categoría:
-        </label>
-        <select
-          id="categorySelect"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          style={{
-            padding: "6px 10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-            fontSize: "1rem",
-            cursor: "pointer",
-          }}
-        >
-          <option value="operaciones">Operaciones</option>
-          <option value="inversion">Inversión</option>
-          <option value="administracion">Administración</option>
-        </select>
-      </div>
+      <main className="flex flex-col items-center p-6 flex-grow">
+        <h2 className="text-center text-3xl font-bold text-blue-900 mb-8">
+          📊 Predicción de Gastos por Categoría
+        </h2>
 
-      {loading && <p style={{ textAlign: "center" }}>Cargando predicciones...</p>}
-      {error && <p style={{ textAlign: "center", color: "red" }}>Error: {error}</p>}
+        <div className="mb-8 flex flex-wrap justify-center gap-6">
+          <div>
+            <label
+              htmlFor="periodSelect"
+              className="font-semibold text-lg mr-2"
+            >
+              Selecciona horizonte de predicción:
+            </label>
+            <select
+              id="periodSelect"
+              value={periods}
+              onChange={(e) => setPeriods(Number(e.target.value))}
+              className="p-2 rounded border border-gray-300 cursor-pointer"
+            >
+              <option value={6}>6 meses</option>
+              <option value={12}>1 año</option>
+              <option value={24}>2 años</option>
+              <option value={36}>3 años</option>
+            </select>
+          </div>
 
-      {!loading && !error && data && (
-        <>
-          <h3 style={{ textAlign: "center", color }}>
-            {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
-          </h3>
-          <Line
-            data={data}
-            options={{
-              ...chartOptions,
-              plugins: {
-                ...chartOptions.plugins,
-                title: {
-                  display: true,
-                  text: `Gastos Históricos y Predicciones - ${selectedCategory
-                    .charAt(0)
-                    .toUpperCase() + selectedCategory.slice(1)}`,
-                },
-              },
-            }}
-          />
-          <p style={{ textAlign: "center", color: "#555", fontWeight: "600" }}>
-            Total estimado: ${total.toFixed(2)}
-          </p>
-        </>
-      )}
+          <div>
+            <label
+              htmlFor="categorySelect"
+              className="font-semibold text-lg mr-2"
+            >
+              Selecciona categoría:
+            </label>
+            <select
+              id="categorySelect"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="p-2 rounded border border-gray-300 cursor-pointer"
+            >
+              <option value="operaciones">Operaciones</option>
+              <option value="inversion">Inversión</option>
+              <option value="administracion">Administración</option>
+            </select>
+          </div>
+        </div>
+
+        {loading && <p className="text-center text-gray-700">Cargando predicciones...</p>}
+        {error && <p className="text-center text-red-600">Error: {error}</p>}
+
+        {!loading && !error && data && (
+          <>
+            <h3 className="text-center text-2xl font-semibold mb-4" style={{ color }}>
+              {selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}
+            </h3>
+            <div
+              className="bg-white p-6 rounded shadow-md w-full max-w-5xl"
+              style={{ maxHeight: "450px" }}
+            >
+              <Line
+                data={data}
+                options={{
+                  ...chartOptions,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    ...chartOptions.plugins,
+                    title: {
+                      display: true,
+                      text: `Gastos Históricos y Predicciones - ${selectedCategory
+                        .charAt(0)
+                        .toUpperCase() + selectedCategory.slice(1)}`,
+                    },
+                  },
+                }}
+                height={400}
+                width={900}
+              />
+            </div>
+            <p className="text-center text-gray-700 font-semibold mt-4 text-lg">
+              Total estimado: ${total.toFixed(2)}
+            </p>
+          </>
+        )}
+      </main>
     </div>
   );
 }

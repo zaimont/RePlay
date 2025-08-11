@@ -35,7 +35,7 @@ function RegisterCompany() {
             if (response.ok) {
                 alert(data.message);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                navigate('/dashboard');
+                navigate('/Login');
             } else {
                 alert(data.message);
             }

@@ -21,7 +21,7 @@ function Login() {
       if (response.ok) {
         alert(data.message);
         localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/userProfile');
+        navigate('/home');
       } else {
         alert(data.message);
       }
