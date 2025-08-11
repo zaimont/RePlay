@@ -7,6 +7,7 @@ import RegisterCompany from './components/authenticationConfiguration/register-c
 import UserProfile from './components/authenticationConfiguration/userProfile'
 import Register from './components/authenticationConfiguration/register'
 import Prediction from './components/dataManagement/PrediccionGastos'
+import Home from './components/authenticationConfiguration/home'
 import PrediccionGastos from './components/dataManagement/PrediccionGastos';
 function App() {
   
@@ -14,12 +15,13 @@ function App() {
   return (
     <Router>
       <Routes>
-         <Route path="/" element={<Login />} />
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/register-company" element={<RegisterCompany />} />
         <Route path="/userProfile" element={<UserProfile />} />
         <Route path="/prediccion-gastos" element={<PrediccionGastos />} />
-       <Route path="/upload-pdf" element={<PdfGastoExtractor />} />
+        <Route path="/upload-pdf" element={<PdfGastoExtractor />} />
         <Route path="/prediccion" element={<Prediction />} />
         <Route path="/comparacion-anual" element={<YearlyComparation />} />
       </Routes>
